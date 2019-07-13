@@ -1,7 +1,15 @@
-import React from 'react';
+import React, { Component } from 'react';
+import styled from 'styled-components';
 
-function App() {
-  return <h1>Hello World!</h1>;
-}
+const Title = styled.h1`
+  color: #f00;
+  font-size: 32px;
+`;
+
+const App = () => (
+  <div className="app">
+    <Title>Hello World!</Title>
+  </div>
+);
 
 export default App;
