@@ -1,15 +1,12 @@
-import React, { Component } from 'react';
-import styled from 'styled-components';
+import React, { Fragment } from 'react';
 
-const Title = styled.h1`
-  color: #f00;
-  font-size: 32px;
-`;
+import GlobalStyle from './styles/global';
 
 const App = () => (
-  <div className="app">
-    <Title>Hello World!</Title>
-  </div>
+  <Fragment>
+    <GlobalStyle />
+    <div className="app" />
+  </Fragment>
 );
 
 export default App;
