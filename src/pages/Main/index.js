@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import moment from "moment";
 import api from "../../services/api";
 
 import { Container, Form } from "./styles";
@@ -19,10 +20,12 @@ export default class Main extends Component {
         const { repositories, respositoryInput } = this.state;
 
         try {
-            const repoData = await api.get(`repos/${respositoryInput}`);
+            const { data } = await api.get(`repos/${respositoryInput}`);
+            data.lastCommit = moment(data.pushed_at).fromNow();
+
             this.setState({
                 respositoryInput: "",
-                repositories: [...repositories, repoData.data]
+                repositories: [...repositories, data]
             });
         } catch (err) {
             console.log(err);
