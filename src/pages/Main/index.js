@@ -12,11 +12,14 @@ export default class Main extends Component {
     state = {
         respositoryInput: "",
         repositories: [],
-        repositoryError: false
+        repositoryError: false,
+
+        isLoading: false
     };
 
     handleAddRepository = async e => {
         e.preventDefault();
+        this.setState({ isLoading: true });
 
         const { repositories, respositoryInput } = this.state;
 
@@ -30,12 +33,22 @@ export default class Main extends Component {
                 repositoryError: false
             });
         } catch (err) {
-            this.setState({ repositoryError: true, respositoryInput: "" });
+            this.setState({
+                repositoryError: true,
+                respositoryInput: ""
+            });
+        } finally {
+            this.setState({ isLoading: false });
         }
     };
 
     render() {
-        const { respositoryInput, repositories, repositoryError } = this.state;
+        const {
+            respositoryInput,
+            repositories,
+            repositoryError,
+            isLoading
+        } = this.state;
 
         return (
             <Container>
@@ -52,7 +65,13 @@ export default class Main extends Component {
                             this.setState({ respositoryInput: e.target.value })
                         }
                     />
-                    <button type="submit">OK</button>
+                    <button type="submit">
+                        {isLoading ? (
+                            <i className="fa fa-spinner fa-pulse" />
+                        ) : (
+                            "OK"
+                        )}
+                    </button>
                 </Form>
                 <CompareList repositories={repositories} />
             </Container>
