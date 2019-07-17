@@ -4,7 +4,53 @@ export const Container = styled.div`
     display: flex;
     align-content: center;
 
-    margin-top: 50px;
+    margin-top: 30px;
+`;
+
+export const RepositoryContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
+export const ActionContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 10px;
+
+    button#delete {
+        height: 55px;
+        width: 110px;
+        padding: 0 20px;
+        margin: 0 10px;
+        background: #f00;
+        color: #fff;
+        border: 0;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 3px;
+
+        &:hover {
+            background: #a00;
+        }
+    }
+
+    button#update {
+        height: 55px;
+        width: 110px;
+        padding: 0 20px;
+        margin: 0 10px;
+        background: #0bf;
+        color: #fff;
+        border: 0;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 3px;
+
+        &:hover {
+            background: #08f;
+        }
+    }
 `;
 
 export const Repository = styled.div`

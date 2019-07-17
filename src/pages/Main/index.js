@@ -10,41 +10,102 @@ import CompareList from "../../components/CompareList";
 
 export default class Main extends Component {
     state = {
-        respositoryInput: "",
+        repositoryInput: "",
         repositories: [],
         repositoryError: false,
 
         isLoading: false
     };
 
+    formatLastCommit = repository => {
+        repository.lastCommit = moment(repository.pushed_at).fromNow();
+    };
+
+    getRepository = async repositoryPath => {
+        const { data } = await api.get(`repos/${repositoryPath}`);
+        this.formatLastCommit(data);
+
+        return data;
+    };
+
     handleAddRepository = async e => {
         e.preventDefault();
         this.setState({ isLoading: true });
 
-        const { repositories, respositoryInput } = this.state;
+        const { repositories, repositoryInput } = this.state;
 
         try {
-            const { data } = await api.get(`repos/${respositoryInput}`);
-            data.lastCommit = moment(data.pushed_at).fromNow();
+            let repositoryData = JSON.parse(
+                localStorage.getItem(`@GitCompare:${repositoryInput}`)
+            );
+            console.log(repositoryData);
+
+            if (!repositoryData) {
+                const repository = await this.getRepository(repositoryInput);
+
+                localStorage.setItem(
+                    `@GitCompare:${repository.id}`,
+                    JSON.stringify(repository)
+                );
+
+                repositoryData = repository;
+            }
 
             this.setState({
-                respositoryInput: "",
-                repositories: [...repositories, data],
+                repositoryInput: "",
+                repositories: [...repositories, repositoryData],
                 repositoryError: false
             });
         } catch (err) {
             this.setState({
                 repositoryError: true,
-                respositoryInput: ""
+                repositoryInput: ""
             });
         } finally {
             this.setState({ isLoading: false });
         }
     };
 
+    handleUpdateRepository = async id => {
+        const { repositories } = this.state;
+
+        const {
+            owner: { login },
+            name
+        } = repositories.find(repo => repo.id === id);
+
+        const repoPath = `${login}/${name}`;
+
+        const repository = await this.getRepository(repoPath);
+
+        this.setState({
+            repositories: repositories.map(repo => {
+                if (repo.id === id) {
+                    return repository;
+                }
+                return repo;
+            })
+        });
+
+        localStorage.setItem(
+            `@GitCompare:${repository.id}`,
+            JSON.stringify(repository)
+        );
+    };
+
+    handleDeleteRepository = id => {
+        const { repositories } = this.state;
+
+        this.setState({
+            repositories: repositories.filter(repo => id !== repo.id)
+        });
+
+        localStorage.removeItem(`@GitCompare:${id}`);
+    };
+
     render() {
         const {
-            respositoryInput,
+            repositoryInput,
             repositories,
             repositoryError,
             isLoading
@@ -60,9 +121,9 @@ export default class Main extends Component {
                     <input
                         type="text"
                         placeholder="user/repository"
-                        value={respositoryInput}
+                        value={repositoryInput}
                         onChange={e =>
-                            this.setState({ respositoryInput: e.target.value })
+                            this.setState({ repositoryInput: e.target.value })
                         }
                     />
                     <button type="submit">
@@ -73,7 +134,11 @@ export default class Main extends Component {
                         )}
                     </button>
                 </Form>
-                <CompareList repositories={repositories} />
+                <CompareList
+                    repositories={repositories}
+                    deleteHandler={this.handleDeleteRepository}
+                    updateHandler={this.handleUpdateRepository}
+                />
             </Container>
         );
     }
